@@ -3,19 +3,22 @@ import os
 import requests
 from typing import Dict, Any
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
+from chatbot import UtahBillAnalyst
 
 load_dotenv()
 
 app = FastAPI(title="Government AI Agent API")
+analyst = UtahBillAnalyst()
 
-PUBLIC_KEY = os.getenv("TIDB_DATAAPP_PUBLIC_KEY")
-PRIVATE_KEY = os.getenv("TIDB_DATAAPP_PRIVATE_KEY")
-TIDB_URL = "https://us-west-2.data.tidbcloud.com/api/v1beta/app/dataapp-raHlDywv/endpoint/vector_search"
+class AnalysisRequest(BaseModel):
+    bill_id: str
+    query: str
 
-embeddings = OpenAIEmbeddings()
+class AnalysisResponse(BaseModel):
+    analysis: str
 
 class SearchRequest(BaseModel):
     bill_id: str
@@ -26,9 +29,32 @@ class SearchRequest(BaseModel):
 class SearchResponse(BaseModel):
     results: Dict[str, Any]
 
+@app.post("/analyze", response_model=AnalysisResponse)
+async def analyze_bill(request: AnalysisRequest):
+    """
+    Analyze a user query about a Utah bill using AI-powered multi-step reasoning.
+    This is the main endpoint that provides intelligent analysis rather than raw search results.
+    """
+    try:
+        analysis = analyst.analyze_query(request.bill_id, request.query)
+        return AnalysisResponse(analysis=analysis)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
 @app.post("/search", response_model=SearchResponse)
 async def search_query(request: SearchRequest):
+    """
+    Direct vector search endpoint for raw TiDB results.
+    Use /analyze for intelligent analysis instead.
+    """
     try:
+        from langchain_openai import OpenAIEmbeddings
+        embeddings = OpenAIEmbeddings()
+        
+        PUBLIC_KEY = os.getenv("TIDB_DATAAPP_PUBLIC_KEY")
+        PRIVATE_KEY = os.getenv("TIDB_DATAAPP_PRIVATE_KEY")
+        TIDB_URL = "https://us-west-2.data.tidbcloud.com/api/v1beta/app/dataapp-raHlDywv/endpoint/vector_search"
+        
         embedded_query = embeddings.embed_query(request.query)
         
         payload = {
