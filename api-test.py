@@ -11,12 +11,12 @@ PRIVATE_KEY = os.getenv("TIDB_DATAAPP_PRIVATE_KEY")
 URL = "https://us-west-2.data.tidbcloud.com/api/v1beta/app/dataapp-raHlDywv/endpoint/vector_search"
 
 embeddings = OpenAIEmbeddings()
-bill_name = input("Enter the bill you'd like to query:\n")
+bill_id = input("Enter the bill you'd like to query:\n")
 query = input("Enter a query:\n") or "Who was the chief sponsor of the bill?"
 embedded_query = embeddings.embed_query(query)
 
 payload = {
-    "bill_name": bill_name,
+    "bill_id": bill_id,
     "query_vector": json.dumps(embedded_query),
     "match_threshold": 0.8,
     "match_count": 3,

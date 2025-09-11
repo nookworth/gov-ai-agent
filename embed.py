@@ -24,14 +24,14 @@ vector_store = TiDBVectorStore(
 
 for file_path in glob.glob(PATTERN):
     try:
-        bill_name = re.search(r"[A-Za-z]{2,4}[\d]{4}", file_path).group() or "unknown"
+        bill_id = re.search(r"[A-Za-z]{2,4}[\d]{4}", file_path).group() or "unknown"
         loader = TextLoader(file_path)
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=10)
         docs = text_splitter.split_documents(documents)
 
         for doc in docs:
-            doc.metadata["bill_name"] = bill_name
+            doc.metadata["bill_id"] = bill_id
 
         vector_store.add_documents(docs)
     except Exception as e:
