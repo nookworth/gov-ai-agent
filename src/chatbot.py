@@ -18,13 +18,13 @@ embeddings = OpenAIEmbeddings()
 
 @tool
 def search_bill_content(
-    bill_id: str, query: str, match_threshold: float = 0.7, match_count: int = 5
+    bill_id: int, query: str, match_threshold: float = 0.7, match_count: int = 5
 ) -> Dict[str, Any]:
     """
     Search for content within a specific bill using vector similarity.
 
     Args:
-        bill_id: The bill identifier (e.g., 'hb0001', 'sb0008')
+        bill_id: The bill identifier
         query: The search query or concept to look for
         match_threshold: Similarity threshold (0.0-1.0, lower = more permissive)
         match_count: Number of results to return
@@ -70,7 +70,7 @@ class UtahBillAnalyst:
         self.tools = [search_bill_content]
         self.llm_with_tools = self.llm.bind_tools(self.tools)
 
-    def analyze_query(self, bill_id: str, user_query: str) -> str:
+    def analyze_query(self, bill_id: int, user_query: str) -> str:
         """
         Analyze a user query about a Utah bill using multi-step reasoning and tool calling.
         """
@@ -117,7 +117,7 @@ Always cite specific sections or content from your search results."""
 
         return response.content
 
-    def stream_analysis(self, bill_id: str, user_query: str):
+    def stream_analysis(self, bill_id: int, user_query: str):
         """
         Stream the analysis response for real-time user feedback.
         """
