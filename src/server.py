@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from chatbot import UtahBillAnalyst
+from src.chatbot import UtahBillAnalyst
 
 load_dotenv()
 
