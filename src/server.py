@@ -13,12 +13,17 @@ load_dotenv()
 
 app = FastAPI(title="Government AI Agent API")
 analyst = UtahBillAnalyst()
-origins = ["http://localhost:*"]
+origins = [
+    "http://localhost:*",
+    "https://utah-gov-ai.vercel.app",
+    "https://gov-ai-agent.fly.dev",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
