@@ -116,11 +116,3 @@ Always cite specific sections or content from your search results."""
             messages.append(response)
 
         return response.content
-
-    def stream_analysis(self, bill_id: int, user_query: str):
-        """
-        Stream the analysis response for real-time user feedback.
-        """
-        # For now, return the full analysis
-        # TODO: Implement proper streaming with incremental tool calling
-        return self.analyze_query(bill_id, user_query)
